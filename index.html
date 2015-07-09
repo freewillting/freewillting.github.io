@@ -61,6 +61,93 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-cocoapods" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/07/09/cocoapods/" class="article-date">
+  <time datetime="2015-07-09T01:15:00.000Z" itemprop="datePublished">2015-07-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/09/cocoapods/">cocoapods</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="cocoapods">cocoapods</h1><h2 id="CocoaPods项目源码">CocoaPods项目源码</h2><h3 id="安装">安装</h3><p>使用MAC自带的ruby下的gem命令：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>sudo gem install cocoapods</span><br><span class="line"><span class="variable">$ </span>pod setup</span><br></pre></td></tr></table></figure>
+<p>在执行pod setup时，会输出Setting up CocoaPods master repo,但是会执行很长时间，在此期间CocoaPods将它的信息下载到~/.cocoapods目录下，此时可以cd到该目录，使用du -sh 命令查看下载进度。使用镜像索引可以提高下载速度（下面有介绍）。</p>
+<p>ruby源用不成的话，将ruby源替换成国内淘宝源</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>gem sources --remove <span class="symbol">https:</span>/<span class="regexp">/rubygems.org/</span></span><br><span class="line"><span class="variable">$ </span>gem sources -a <span class="symbol">http:</span>/<span class="regexp">/ruby.taobao.org/</span></span><br></pre></td></tr></table></figure>
+<p>查看源是否替换成功</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gem sources <span class="operator">-l</span></span><br></pre></td></tr></table></figure>
+<p>如果安装的CocoaPods不能使用，可以尝试更新gem (sudo gem update —system),更新Iterm(删除原有的iterm,下载并安装新版本的iterm)。</p>
+<h3 id="镜像索引">镜像索引</h3><p>所有的项目的PodSpec文件都托管在podSpec。第一次执行pod setup时，将这些索引文件更新到本地~/.cocoapods/目录下。该文件比较大，所以第一次更新比较慢。</p>
+<p>akinkiu在gitcafe和occhina上建立了CocoaPods索引镜像。gitcafe和occhina都是国内服务器，在执行索引更新操作时会比较快。</p>
+<p>CoaoaPods设置成gitcafe镜像：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ pod repo <span class="built_in">remove</span> master</span><br><span class="line">$ pod repo <span class="built_in">add</span> master http<span class="variable">s:</span>//gitcafe.<span class="keyword">com</span>/akuandev/Specs.git</span><br><span class="line">$ pod repo <span class="keyword">update</span></span><br></pre></td></tr></table></figure>
+<p>将以上url改为<a href="http://git.oschina.net.akuandev/Specs.git即可使用occhina镜像。" target="_blank" rel="external">http://git.oschina.net.akuandev/Specs.git即可使用occhina镜像。</a></p>
+<h3 id="用法">用法</h3><h4 id="cd到以创建的项目的目录下执行以下命令">cd到以创建的项目的目录下执行以下命令</h4><ul>
+<li>生成Podfile文件，编辑该文件，添加所要加入的第三方库的名称版本（版本可以不用加）</li>
+</ul>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ pod init</span><br><span class="line"></span><br><span class="line"><span class="label">eg:</span></span><br><span class="line"></span><br><span class="line">pod ‘AFNetworking’, ‘~&gt; <span class="number">2.0</span>’</span><br><span class="line"></span><br><span class="line">pod ‘JSONKit’</span><br></pre></td></tr></table></figure>
+<ul>
+<li>自动将加入的第三方库源码下载下来，且为项目设置号好相应的系统依赖和编译参数</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pod <span class="keyword">install</span></span><br></pre></td></tr></table></figure>
+<p>注意</p>
+<ul>
+<li><p>使用CocoaPods生成的*.xcworkspace文件打开工程，而不是以前的*.xcodeproj文件。</p>
+</li>
+<li><p>每次修改了Podfile文件，都需要执行一次</p>
+</li>
+</ul>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>pod update</span><br></pre></td></tr></table></figure>
+<ul>
+<li>pop install之后还生成的另一个文件Podfile.lock,该文件不能放在.gitignore文件中。该文件用来锁定当前各依赖库的版本，之后及时多次执行pod install也不会更改版本，只有执行pod update才会改变Podfile.lock文件。该文件可以在多人协作时，防止第三方库升级造成大家各自的第三方库的版本不一致。Podfile.lock</li>
+</ul>
+<h4 id="查找第三方库">查找第三方库</h4><p>查找CocoaPods管理是否有你想要的库，执行命令 pod search</p>
+<p>eg： pod search json 可查找与接送有关的所有库</p>
+<ul>
+<li>生成第三方库帮助文档</li>
+</ul>
+<p>使用CocoaPods生成第三方库的帮助文档并集成到Xcode中，可使用brew安装appledoc即可：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">brew </span>install appledoc</span><br></pre></td></tr></table></figure>
+<p>其优点：将帮助文档集成到Xcode中，在敲代码时可以按住opt键查看相应帮助文档</p>
+<ul>
+<li>不更新podspec</li>
+</ul>
+<p>CocoaPods在执行pod install 和 pod update 时，会默认更新podspec索引。禁止更新podspec的命令：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ pod install --<span class="keyword">no</span>-repo-<span class="keyword">update</span></span><br><span class="line">$ pod <span class="keyword">update</span> --<span class="keyword">no</span>-repo-<span class="keyword">update</span></span><br></pre></td></tr></table></figure>
+<h3 id="原理">原理</h3><p>CocoaPods的原理是将所有的依赖库都放到一个名为Pods的项目中，然互让主项目依赖Pods项目。</p>
+<ul>
+<li>Pods项目最终会编译成一个名为libPods.a的文件，主项目只需要依赖.a这个文件即可。</li>
+<li>对于资源文件，CocoaPods提供了一个名为Pods-resources.sh的bash脚本，该脚本在每次项目编译的时候都会执行，将第三方的各个资源文件复制到目标目录中。</li>
+<li>CocoaPods通过一个名为Pods.xcconfig的文件在编译的时候设置所有的参数和依赖。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/07/09/cocoapods/" data-id="cibvixvc80000r7gsxfcjwdul" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-setupblog" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/07/08/setupblog/" class="article-date">
@@ -125,7 +212,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/07/08/setupblog/" data-id="cibui0fs00002wigsv4a8ybmp" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/07/08/setupblog/" data-id="cibvixvch0002r7gsorh012ys" class="article-share-link">Share</a>
       
       
     </footer>
@@ -161,7 +248,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/07/08/test/" data-id="cibui0frx0001wigswd9i3ru5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/07/08/test/" data-id="cibvixvcf0001r7gs6auegcos" class="article-share-link">Share</a>
       
       
     </footer>
@@ -206,7 +293,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/07/08/hello-world/" data-id="cibui0frj0000wigs7298hgbk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/07/08/hello-world/" data-id="cibvixvcj0003r7gsuibl382r" class="article-share-link">Share</a>
       
       
     </footer>
@@ -231,7 +318,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">4</span></li></ul>
     </div>
   </div>
 
@@ -241,6 +328,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/07/09/cocoapods/">cocoapods</a>
+          </li>
         
           <li>
             <a href="/2015/07/08/setupblog/">setupblog</a>
